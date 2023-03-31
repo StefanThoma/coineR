@@ -2,9 +2,8 @@ Package: coineR
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+    person("Stefan", "Thoma", , "stefan.p.thoma@gmail.com", role = c("aut", "cre"))
+Description: This package extends the coin package and provides further nonparametric tests.
 License: MIT + file LICENSE
 Suggests: 
     testthat (>= 3.0.0)
@@ -15,4 +14,10 @@ RoxygenNote: 7.2.3
 URL: https://github.com/StefanThoma/coineR
 BugReports: https://github.com/StefanThoma/coineR/issues
 Imports: 
-    purrr
+    coin,
+    combinat,
+    dplyr,
+    magrittr,
+    purrr,
+    rlang,
+    Rmpfr
