@@ -7,7 +7,7 @@
 #' @export
 #' @importFrom magrittr "%>%"
 #' @examples
-#' get_tie_correction(.data = tibble(vec = c(1:6, 1:6)), vec)
+#' get_tie_correction(.data = dplyr::tibble(vec = c(1:6, 1:6)), vec)
 get_tie_correction <- function(.data, vector){
 
   if (dplyr::is_grouped_df(.data)) {
@@ -17,7 +17,7 @@ get_tie_correction <- function(.data, vector){
   .data %>%
     dplyr::select({{vector}}) %>%
     table() %>%
-    tibble::tibble(n = .) %>%
+    dplyr::tibble(n = .) %>%
     dplyr::mutate(
       t = 1-(sum(n^3-n)/(sum(n)^3-sum(n)))
     )
