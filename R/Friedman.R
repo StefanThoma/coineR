@@ -132,7 +132,7 @@ friedman_test <- function(.data, formula, type = "exact"){
 
   permutation_list <- lapply(split(.data,
                                    .data %>% dplyr::pull({{block}})),
-                             function(.data){do.call(rbind, combinat::permn(.data %>% pull(rank)))})
+                             function(.data){do.call(rbind, combinat::permn(.data %>% dplyr::pull(rank)))})
 
   np <- .data %>% dplyr::summarize(
     p = {{group}} %>% unique() %>% length(),
@@ -192,14 +192,14 @@ friedman_test <- function(.data, formula, type = "exact"){
 #' @examples
 #' lapply(1:1000, function(n) nth_row(n, 30, 5))
 #' # or simply:
-#' nth_row(10, 3, 10)
+#' nth_row(10)
 nth_row <- function(n, p = 3, ninp = 5) {
   basevec <- rep(1, p)
 
   x <- Rmpfr::mpfr(n-1, precBits = 64, base = 10)  ## base = 10 is default
-  numb <- as.numeric(format(x, base = ninp))
+  numb <- as.numeric(Rmpfr::formatMpfr(x, base = ninp))
   vec <- as.numeric(
-    strsplit(as.character(numb),"") %>% dplyr::as_vector())
+    strsplit(as.character(numb),"") %>% purrr::as_vector())
 
   vec <- c(rep(0, length(basevec) - length(vec) ), vec)
   basevec + vec
