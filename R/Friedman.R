@@ -246,8 +246,8 @@ nth_row <- function(n, p = 3, ninp = 5) {
 #' @param .data data frame
 #' @param formula formula of structure dv ~ group | block
 #' @param total_t total tie correction
+#' @param np df with n (number of blocks) and p (number of groups)
 #' @importFrom magrittr "%>%"
-#' @param np
 #'
 #' @return numeric() Friedmans test statistic
 #' @export
@@ -266,7 +266,10 @@ nth_row <- function(n, p = 3, ninp = 5) {
 #' )
 #'
 #'
-#' get_q_light(.data = data, formula = ability ~ group | participant, total_t = 3.5)
+#' get_q_light(.data = data,
+#'         formula = ability ~ group | participant,
+#'         total_t = 3.5,
+#'         np = dplyr::tibble(n = 3, p = 4))
 get_q_light <- function(.data, formula, total_t, np) {
   # check inputs
 

@@ -15,7 +15,7 @@ get_q_light(.data, formula, total_t, np)
 
 \item{total_t}{total tie correction}
 
-\item{np}{}
+\item{np}{df with n (number of blocks) and p (number of groups)}
 }
 \value{
 numeric() Friedmans test statistic
@@ -39,5 +39,8 @@ data$ability <- c(
 )
 
 
-get_q_light(.data = data, formula = ability ~ group | participant, total_t = 3.5)
+get_q_light(.data = data,
+        formula = ability ~ group | participant,
+        total_t = 3.5,
+        np = dplyr::tibble(n = 3, p = 4))
 }
