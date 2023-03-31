@@ -13,6 +13,9 @@ friedman_test(.data, formula, type = "exact")
 
 \item{type}{exact}
 }
+\value{
+list with p-value and test statistic of Friedmans test
+}
 \description{
 compute friedman statistic and p value
 }

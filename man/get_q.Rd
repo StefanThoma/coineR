@@ -7,8 +7,31 @@
 get_q(.data, formula, total_t = NULL)
 }
 \arguments{
-\item{total_t}{}
+\item{.data}{data file}
+
+\item{formula}{formula of structure dv ~ group | block}
+
+\item{total_t}{total tie correction}
+}
+\value{
+friedmans test statistic
 }
 \description{
 not used right now
+}
+\examples{
+participant <- 1:4
+group <- 1:3
+data <- expand.grid(
+  "participant" = participant,
+  "group" = group
+)
+data$ability <- c(
+  7, 8, 8, 6,
+  10, 12, 8, 10,
+  11, 12, 13, 11
+)
+
+
+get_q(.data = data, formula = ability ~ group | participant)
 }

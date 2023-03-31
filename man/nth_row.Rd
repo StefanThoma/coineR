@@ -10,7 +10,14 @@ starting form 1 to p}
 nth_row(n, p = 3, ninp = 5)
 }
 \arguments{
-\item{ninp}{}
+\item{n}{numeric(1) row of permutation table}
+
+\item{p}{numeric(1) number of variables}
+
+\item{ninp}{numeric(1) length of original vector in each variable}
+}
+\value{
+indicator vector with element for each block to get order from permutation list
 }
 \description{
 nth row

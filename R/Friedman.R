@@ -28,15 +28,29 @@ get_tie_correction <- function(.data, vector) {
 #'
 #' not used right now
 #'
-#' @param .data
-#' @param formula
-#' @param total_t
+#' @param .data data file
+#' @param formula formula of structure dv ~ group | block
+#' @param total_t total tie correction
 #'
-#' @return
+#' @return friedmans test statistic
 #' @export
 #' @importFrom magrittr "%>%"
 #'
 #' @examples
+#' participant <- 1:4
+#' group <- 1:3
+#' data <- expand.grid(
+#'   "participant" = participant,
+#'   "group" = group
+#' )
+#' data$ability <- c(
+#'   7, 8, 8, 6,
+#'   10, 12, 8, 10,
+#'   11, 12, 13, 11
+#' )
+#'
+#'
+#' get_q(.data = data, formula = ability ~ group | participant)
 get_q <- function(.data, formula, total_t = NULL) {
   # check inputs
 
@@ -97,7 +111,7 @@ get_q <- function(.data, formula, total_t = NULL) {
 #' @param formula of the form: dv ~ group | block
 #' @param type exact
 #'
-#' @return
+#' @return list with p-value and test statistic of Friedmans test
 #' @export
 #'
 #' @importFrom magrittr "%>%"
@@ -197,11 +211,11 @@ friedman_test <- function(.data, formula, type = "exact") {
 #' get nth row of permutation table of certain specification.
 #' namely, the p permutation vectors are all the same and are consecutive integers
 #' starting form 1 to p
-#' @param n
-#' @param p
-#' @param ninp
+#' @param n numeric(1) row of permutation table
+#' @param p numeric(1) number of variables
+#' @param ninp numeric(1) length of original vector in each variable
 #'
-#' @return
+#' @return indicator vector with element for each block to get order from permutation list
 #' @export
 #' @importFrom magrittr "%>%"
 #' @examples
@@ -229,16 +243,30 @@ nth_row <- function(n, p = 3, ninp = 5) {
 #' does less computation
 #' stuff that can be computed once is computed outside the function
 #'
-#' @param .data
-#' @param formula
-#' @param total_t
+#' @param .data data frame
+#' @param formula formula of structure dv ~ group | block
+#' @param total_t total tie correction
 #' @importFrom magrittr "%>%"
 #' @param np
 #'
-#' @return
+#' @return numeric() Friedmans test statistic
 #' @export
 #'
 #' @examples
+#' participant <- 1:4
+#' group <- 1:3
+#' data <- expand.grid(
+#'   "participant" = participant,
+#'   "group" = group
+#' )
+#' data$ability <- c(
+#'   7, 8, 8, 6,
+#'   10, 12, 8, 10,
+#'   11, 12, 13, 11
+#' )
+#'
+#'
+#' get_q_light(.data = data, formula = ability ~ group | participant, total_t = 3.5)
 get_q_light <- function(.data, formula, total_t, np) {
   # check inputs
 

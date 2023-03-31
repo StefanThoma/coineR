@@ -9,10 +9,35 @@ stuff that can be computed once is computed outside the function}
 get_q_light(.data, formula, total_t, np)
 }
 \arguments{
+\item{.data}{data frame}
+
+\item{formula}{formula of structure dv ~ group | block}
+
+\item{total_t}{total tie correction}
+
 \item{np}{}
+}
+\value{
+numeric() Friedmans test statistic
 }
 \description{
 light version of get_q
 does less computation
 stuff that can be computed once is computed outside the function
+}
+\examples{
+participant <- 1:4
+group <- 1:3
+data <- expand.grid(
+  "participant" = participant,
+  "group" = group
+)
+data$ability <- c(
+  7, 8, 8, 6,
+  10, 12, 8, 10,
+  11, 12, 13, 11
+)
+
+
+get_q_light(.data = data, formula = ability ~ group | participant, total_t = 3.5)
 }
