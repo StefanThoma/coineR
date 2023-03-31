@@ -8,18 +8,17 @@
 #' @importFrom magrittr "%>%"
 #' @examples
 #' get_tie_correction(.data = dplyr::tibble(vec = c(1:6, 1:6)), vec)
-get_tie_correction <- function(.data, vector){
-
+get_tie_correction <- function(.data, vector) {
   if (dplyr::is_grouped_df(.data)) {
-    return(dplyr::do(.data, get_tie_correction(., {{vector}})))
+    return(dplyr::do(.data, get_tie_correction(., {{ vector }})))
   }
 
   .data %>%
-    dplyr::select({{vector}}) %>%
+    dplyr::select({{ vector }}) %>%
     table() %>%
     dplyr::tibble(n = .) %>%
     dplyr::mutate(
-      t = 1-(sum(n^3-n)/(sum(n)^3-sum(n)))
+      t = 1 - (sum(n^3 - n) / (sum(n)^3 - sum(n)))
     )
 }
 
@@ -38,7 +37,7 @@ get_tie_correction <- function(.data, vector){
 #' @importFrom magrittr "%>%"
 #'
 #' @examples
-get_q <- function(.data, formula, total_t = NULL){
+get_q <- function(.data, formula, total_t = NULL) {
   # check inputs
 
   # parse formula
@@ -48,34 +47,41 @@ get_q <- function(.data, formula, total_t = NULL){
   group <- rhs[[2]]
 
   # compute rank & ranksum
-  .data <- .data %>% dplyr::mutate(
-    .by = {{block}},
-    rank_by_block = coin::rank_trafo({{lhs}})
-  ) %>% dplyr::mutate(
-    .by = {{group}},
-    ranksum_group = sum(rank_by_block),
-  )
+  .data <- .data %>%
+    dplyr::mutate(
+      .by = {{ block }},
+      rank_by_block = coin::rank_trafo({{ lhs }})
+    ) %>%
+    dplyr::mutate(
+      .by = {{ group }},
+      ranksum_group = sum(rank_by_block),
+    )
 
   # compute tie correction
-  if(is.null(total_t)){
-    total_t <- .data %>% dplyr::group_by({{block}}) %>%
+  if (is.null(total_t)) {
+    total_t <- .data %>%
+      dplyr::group_by({{ block }}) %>%
       get_tie_correction(rank_by_block) %>%
       dplyr::summarize(t = unique(t)) %>%
-      dplyr::pull(t) %>% sum()
+      dplyr::pull(t) %>%
+      sum()
   }
   # compute q
   # first, get number of groups and blocks
   np <- .data %>% dplyr::summarize(
-    p = {{group}} %>% unique() %>% length(),
-    n = {{block}} %>% unique() %>% length()
+    p = {{ group }} %>% unique() %>% length(),
+    n = {{ block }} %>% unique() %>% length()
   )
 
   # extract ranksum vector
-  rs <- .data %>% dplyr::group_by({{group}}) %>% dplyr::summarize(
-    rs = max(ranksum_group)
-  ) %>% dplyr::pull()
+  rs <- .data %>%
+    dplyr::group_by({{ group }}) %>%
+    dplyr::summarize(
+      rs = max(ranksum_group)
+    ) %>%
+    dplyr::pull()
 
-  1/total_t * ((12/(np$p*(np$p+1)) * sum(rs^2)) - 3 * np$n^2 * (np$p+1))
+  1 / total_t * ((12 / (np$p * (np$p + 1)) * sum(rs^2)) - 3 * np$n^2 * (np$p + 1))
 }
 
 
@@ -96,21 +102,22 @@ get_q <- function(.data, formula, total_t = NULL){
 #'
 #' @importFrom magrittr "%>%"
 #' @examples
-#' participant  <- 1:4
+#' participant <- 1:4
 #' group <- 1:3
 #' data <- expand.grid(
 #'   "participant" = participant,
 #'   "group" = group
 #' )
-#' data$ability <- c(7, 8, 8, 6,
-#'                   10, 12, 8, 10,
-#'                   11, 12, 13, 11)
+#' data$ability <- c(
+#'   7, 8, 8, 6,
+#'   10, 12, 8, 10,
+#'   11, 12, 13, 11
+#' )
 #'
 #'
 #' friedman_test(.data = data, formula = ability ~ group | participant)
-friedman_test <- function(.data, formula, type = "exact"){
-
-  #permutations follow a pattern within block:
+friedman_test <- function(.data, formula, type = "exact") {
+  # permutations follow a pattern within block:
   # parse formula
   lhs <- rlang::f_lhs(formula)
   rhs <- rlang::f_rhs(formula)
@@ -119,38 +126,46 @@ friedman_test <- function(.data, formula, type = "exact"){
 
   # get ranks
   .data <- .data %>% dplyr::mutate(
-    .by = {{block}},
-    rank = coin::rank_trafo({{lhs}})
+    .by = {{ block }},
+    rank = coin::rank_trafo({{ lhs }})
   )
-  total_t <- .data %>% dplyr::group_by({{block}}) %>%
+  total_t <- .data %>%
+    dplyr::group_by({{ block }}) %>%
     dplyr::mutate(
-      rank_by_block = coin::rank_trafo({{lhs}})
+      rank_by_block = coin::rank_trafo({{ lhs }})
     ) %>%
     get_tie_correction(rank_by_block) %>%
     dplyr::summarize(t = unique(t)) %>%
-    dplyr::pull(t) %>% sum()
+    dplyr::pull(t) %>%
+    sum()
 
-  permutation_list <- lapply(split(.data,
-                                   .data %>% dplyr::pull({{block}})),
-                             function(.data){do.call(rbind, combinat::permn(.data %>% dplyr::pull(rank)))})
+  permutation_list <- lapply(
+    split(
+      .data,
+      .data %>% dplyr::pull({{ block }})
+    ),
+    function(.data) {
+      do.call(rbind, combinat::permn(.data %>% dplyr::pull(rank)))
+    }
+  )
 
   np <- .data %>% dplyr::summarize(
-    p = {{group}} %>% unique() %>% length(),
-    n = {{block}} %>% unique() %>% length()
+    p = {{ group }} %>% unique() %>% length(),
+    n = {{ block }} %>% unique() %>% length()
   )
 
   n_permutations <- factorial(np$p)^np$n
 
   # sorting here is essential for the get_gs fuction
-  .data <- .data %>% dplyr::arrange({{block}})
+  .data <- .data %>% dplyr::arrange({{ block }})
   perm_names <- names(permutation_list)
-  get_qs <- function(n){
+  get_qs <- function(n) {
     # get the permutation indices
     temp_permute <- nth_row(n = n, p = np$n, ninp = factorial(np$p))
 
     # get ranks according to permutation indices
-    .data$rank <- vapply(1:length(perm_names), FUN = function(ind){
-      permutation_list[[ind]][temp_permute[ind],]
+    .data$rank <- vapply(1:length(perm_names), FUN = function(ind) {
+      permutation_list[[ind]][temp_permute[ind], ]
     }, FUN.VALUE = numeric(np$p)) %>% as.vector()
 
     # compute q based on based on permuted ranks
@@ -196,12 +211,13 @@ friedman_test <- function(.data, formula, type = "exact"){
 nth_row <- function(n, p = 3, ninp = 5) {
   basevec <- rep(1, p)
 
-  x <- Rmpfr::mpfr(n-1, precBits = 64, base = 10)  ## base = 10 is default
+  x <- Rmpfr::mpfr(n - 1, precBits = 64, base = 10) ## base = 10 is default
   numb <- as.numeric(Rmpfr::formatMpfr(x, base = ninp))
   vec <- as.numeric(
-    strsplit(as.character(numb),"") %>% purrr::as_vector())
+    strsplit(as.character(numb), "") %>% purrr::as_vector()
+  )
 
-  vec <- c(rep(0, length(basevec) - length(vec) ), vec)
+  vec <- c(rep(0, length(basevec) - length(vec)), vec)
   basevec + vec
 }
 
@@ -223,7 +239,7 @@ nth_row <- function(n, p = 3, ninp = 5) {
 #' @export
 #'
 #' @examples
-get_q_light <- function(.data, formula, total_t, np){
+get_q_light <- function(.data, formula, total_t, np) {
   # check inputs
 
   # parse formula
@@ -233,12 +249,16 @@ get_q_light <- function(.data, formula, total_t, np){
   group <- rhs[[2]]
 
   # compute ranksum vector
-  rs <- .data %>% dplyr::mutate(
-    .by = {{group}},
-    ranksum_group = sum({{lhs}}),
-  ) %>% dplyr::group_by({{group}}) %>% dplyr::summarize(
-    rs = max(ranksum_group)
-  ) %>% dplyr::pull()
+  rs <- .data %>%
+    dplyr::mutate(
+      .by = {{ group }},
+      ranksum_group = sum({{ lhs }}),
+    ) %>%
+    dplyr::group_by({{ group }}) %>%
+    dplyr::summarize(
+      rs = max(ranksum_group)
+    ) %>%
+    dplyr::pull()
 
-  1/total_t * ((12/(np$p*(np$p+1)) * sum(rs^2)) - 3 * np$n^2 * (np$p+1))
+  1 / total_t * ((12 / (np$p * (np$p + 1)) * sum(rs^2)) - 3 * np$n^2 * (np$p + 1))
 }

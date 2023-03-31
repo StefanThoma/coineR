@@ -18,5 +18,5 @@ dataframe including t as tievector
 compute tie correction
 }
 \examples{
-get_tie_correction(.data = tibble(vec = c(1:6, 1:6)), vec)
+get_tie_correction(.data = dplyr::tibble(vec = c(1:6, 1:6)), vec)
 }

@@ -17,15 +17,17 @@ friedman_test(.data, formula, type = "exact")
 compute friedman statistic and p value
 }
 \examples{
-participant  <- 1:4
+participant <- 1:4
 group <- 1:3
 data <- expand.grid(
   "participant" = participant,
   "group" = group
 )
-data$ability <- c(7, 8, 8, 6,
-                  10, 12, 8, 10,
-                  11, 12, 13, 11)
+data$ability <- c(
+  7, 8, 8, 6,
+  10, 12, 8, 10,
+  11, 12, 13, 11
+)
 
 
 friedman_test(.data = data, formula = ability ~ group | participant)
