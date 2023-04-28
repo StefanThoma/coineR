@@ -38,7 +38,9 @@ data$ability <- c(
 )
 
 
-friedman_test(.data = data, formula = ability ~ group | participant, type = "exact")
+friedman_test(.data = data, 
+              formula = ability ~ group | participant,
+              type = "exact")
 ```
 # Cochrans Q
 
@@ -56,6 +58,7 @@ autos <- matrix(data = c(0,0,0,0,0,1,0,0,0,1,
 
 
 cochran_test(.data =  autos, formula = value ~ group | family, type = "montecarlo", n_samples = 100000)
+coin::friedman_test()
 
 
 ```

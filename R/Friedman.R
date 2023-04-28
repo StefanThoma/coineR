@@ -154,6 +154,7 @@ friedman_test <- function(.data, formula, type = c("exact", "montecarlo"), n_sam
     dplyr::pull(t) %>%
     sum()
 
+
   permutation_list <- lapply(
     split(
       .data,

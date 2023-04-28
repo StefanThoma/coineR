@@ -30,7 +30,7 @@ cochran_test <- function(.data, formula, type = c("exact", "montecarlo"), n_samp
   block <- rhs[[3]]
   group <- rhs[[2]]
 
-  admiraldev::assert_data_frame(.data, required_vars = rlang::exprs(lhs, block, group))
+  admiraldev::assert_data_frame(.data)
 
 
   compute_q <- create_q_f(.data = .data, formula = formula)
