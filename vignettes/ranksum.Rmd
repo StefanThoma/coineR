@@ -1,0 +1,62 @@
+---
+title: "ranksum"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ranksum}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+#library(coineR)
+library(dplyr)
+library(tidyr)
+
+devtools::load_all()
+```
+
+# Friedmans test
+
+```{r}
+participant <- 1:4
+group <- 1:3
+data <- expand.grid(
+  "participant" = participant,
+  "group" = group
+)
+data$ability <- c(
+  7, 8, 8, 6,
+  10, 12, 8, 10,
+  11, 12, 13, 11
+)
+
+
+friedman_test(.data = data, formula = ability ~ group | participant, type = "exact")
+```
+# Cochrans Q
+
+```{r}
+autos <- matrix(data = c(0,0,0,0,0,1,0,0,0,1,
+                         0,1,0,0,1,0,0,1,0,1,
+                         0,1,1,0,1,1,0,1,1,1,
+                         0,1,1,0,0,1,1,1,1,1),
+                nrow = 10, ncol = 4, byrow = FALSE) %>% as_tibble() %>% 
+  mutate(family = row_number()) %>% 
+  pivot_longer(V1:V4, names_to = "group")
+
+
+  
+
+
+cochran_test(.data =  autos, formula = value ~ group | family, type = "montecarlo", n_samples = 100000)
+
+
+```
+

@@ -130,7 +130,7 @@ get_q <- function(.data, formula, total_t = NULL) {
 #'
 #'
 #' friedman_test(.data = data, formula = ability ~ group | participant)
-friedman_test <- function(.data, formula, type = "exact") {
+friedman_test <- function(.data, formula, type = c("exact", "montecarlo"), n_samples = 10000) {
   # permutations follow a pattern within block:
   # parse formula
   lhs <- rlang::f_lhs(formula)
@@ -143,6 +143,7 @@ friedman_test <- function(.data, formula, type = "exact") {
     .by = {{ block }},
     rank = coin::rank_trafo({{ lhs }})
   )
+
   total_t <- .data %>%
     dplyr::group_by({{ block }}) %>%
     dplyr::mutate(
@@ -185,11 +186,15 @@ friedman_test <- function(.data, formula, type = "exact") {
     # compute q based on based on permuted ranks
     get_q_light(.data, rank ~ group | block, total_t = total_t, np = np)
   }
-  qs <- sapply(1:n_permutations, FUN = get_qs)
 
-  p <- sum(qs >= qs[1]) / n_permutations
+  q_value <- get_qs(1)
+  qs <- get_q_vector(.f = get_qs, type = type, n_samples = n_samples, n_permutations)
+  #qs <- purrr::map_dbl(1:n_permutations, . = get_qs)
 
-  list(p = p, q = qs[1])
+
+  p <- sum(qs >= q_value) / n_permutations
+
+  return(list(q = q_value, p = p))
   # perms_in_block <- rbind(1:np$p, permute::allPerms(1:np$p))
   # perm_options <- nrow(perms_in_block)
   #
@@ -222,19 +227,26 @@ friedman_test <- function(.data, formula, type = "exact") {
 #' lapply(1:1000, function(n) nth_row(n, 30, 5))
 #' # or simply:
 #' nth_row(10)
-nth_row <- function(n, p = 3, ninp = 5) {
+#nth_row <- function(n, p = 3, ninp = 5) {
+#  basevec <- rep(1, p)
+#
+#
+#  x <- Rmpfr::mpfr(n - 1, precBits = 64, base = 10) ## base = 10 is default
+#  numb <- as.numeric(Rmpfr::formatMpfr(x, base = ninp))
+#  vec <- as.numeric(
+#    strsplit(as.character(numb), "") %>% purrr::as_vector()
+#  )
+#
+#  vec <- c(rep(0, length(basevec) - length(vec)), vec)
+#  basevec + vec
+# }
+nth_row <- function(n, p = 3, ninp = 5){
   basevec <- rep(1, p)
-
-  x <- Rmpfr::mpfr(n - 1, precBits = 64, base = 10) ## base = 10 is default
-  numb <- as.numeric(Rmpfr::formatMpfr(x, base = ninp))
-  vec <- as.numeric(
-    strsplit(as.character(numb), "") %>% purrr::as_vector()
-  )
+  vec <- convert_base(n-1, ninp)
 
   vec <- c(rep(0, length(basevec) - length(vec)), vec)
   basevec + vec
 }
-
 
 
 
@@ -291,5 +303,42 @@ get_q_light <- function(.data, formula, total_t, np) {
     ) %>%
     dplyr::pull()
 
+
   1 / total_t * ((12 / (np$p * (np$p + 1)) * sum(rs^2)) - 3 * np$n^2 * (np$p + 1))
 }
+
+
+
+#' base converter
+#'
+#' @param num number to convert
+#' @param p base to convert to
+#'
+#' @return vector of decimal values
+#' @export
+#'
+#' @examples
+convert_base <- function(num, base) {
+  if (base < 2 | base > 36) {
+    stop("Base must be between 2 and 36")
+  }
+  if (num < 0) {
+    stop("Number must be non-negative")
+  }
+
+  digits <- 0:35
+
+  result <- c()
+  while (num > 0) {
+    remainder <- num %% base
+    result <- c(digits[remainder+1], result)
+    num <- floor(num / base)
+  }
+
+  if (length(result) == 0) {
+    result <- 0
+  }
+  return(result)
+}
+
+
