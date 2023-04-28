@@ -39,8 +39,10 @@ data$ability <- c(
 )
 
 
-get_q_light(.data = data,
-        formula = ability ~ group | participant,
-        total_t = 3.5,
-        np = dplyr::tibble(n = 3, p = 4))
+get_q_light(
+  .data = data,
+  formula = ability ~ group | participant,
+  total_t = 3.5,
+  np = dplyr::tibble(n = 3, p = 4)
+)
 }

@@ -29,4 +29,12 @@ starting form 1 to p
 lapply(1:1000, function(n) nth_row(n, 30, 5))
 # or simply:
 nth_row(10)
+# basevec <- rep(1, p)
+# x <- Rmpfr::mpfr(n - 1, precBits = 64, base = 10) ## base = 10 is default
+# numb <- as.numeric(Rmpfr::formatMpfr(x, base = ninp))
+# vec <- as.numeric(
+#   strsplit(as.character(numb), "") \%>\% purrr::as_vector()
+# )
+# vec <- c(rep(0, length(basevec) - length(vec)), vec)
+# basevec + vec
 }

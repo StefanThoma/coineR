@@ -1,9 +1,14 @@
 test_that("compute cochran test", {
-  autos <- matrix(data = c(0,0,0,0,0,1,0,0,0,1,
-                           0,1,0,0,1,0,0,1,0,1,
-                           0,1,1,0,1,1,0,1,1,1,
-                           0,1,1,0,0,1,1,1,1,1),
-                  nrow = 10, ncol = 4, byrow = FALSE) %>% as_tibble() %>%
+  autos <- matrix(
+    data = c(
+      0, 0, 0, 0, 0, 1, 0, 0, 0, 1,
+      0, 1, 0, 0, 1, 0, 0, 1, 0, 1,
+      0, 1, 1, 0, 1, 1, 0, 1, 1, 1,
+      0, 1, 1, 0, 0, 1, 1, 1, 1, 1
+    ),
+    nrow = 10, ncol = 4, byrow = FALSE
+  ) %>%
+    as_tibble() %>%
     mutate(family = row_number()) %>%
     pivot_longer(V1:V4, names_to = "group")
 

@@ -190,7 +190,7 @@ friedman_test <- function(.data, formula, type = c("exact", "montecarlo"), n_sam
 
   q_value <- get_qs(1)
   qs <- get_q_vector(.f = get_qs, type = type, n_samples = n_samples, n_permutations)
-  #qs <- purrr::map_dbl(1:n_permutations, . = get_qs)
+  # qs <- purrr::map_dbl(1:n_permutations, . = get_qs)
 
 
   p <- sum(qs >= q_value) / n_permutations
@@ -228,22 +228,19 @@ friedman_test <- function(.data, formula, type = c("exact", "montecarlo"), n_sam
 #' lapply(1:1000, function(n) nth_row(n, 30, 5))
 #' # or simply:
 #' nth_row(10)
-#nth_row <- function(n, p = 3, ninp = 5) {
-#  basevec <- rep(1, p)
-#
-#
-#  x <- Rmpfr::mpfr(n - 1, precBits = 64, base = 10) ## base = 10 is default
-#  numb <- as.numeric(Rmpfr::formatMpfr(x, base = ninp))
-#  vec <- as.numeric(
-#    strsplit(as.character(numb), "") %>% purrr::as_vector()
-#  )
-#
-#  vec <- c(rep(0, length(basevec) - length(vec)), vec)
-#  basevec + vec
+# nth_row <- function(n, p = 3, ninp = 5) {
+#' # basevec <- rep(1, p)
+#' # x <- Rmpfr::mpfr(n - 1, precBits = 64, base = 10) ## base = 10 is default
+#' # numb <- as.numeric(Rmpfr::formatMpfr(x, base = ninp))
+#' # vec <- as.numeric(
+#' #   strsplit(as.character(numb), "") %>% purrr::as_vector()
+#' # )
+#' # vec <- c(rep(0, length(basevec) - length(vec)), vec)
+#' # basevec + vec
 # }
-nth_row <- function(n, p = 3, ninp = 5){
+nth_row <- function(n, p = 3, ninp = 5) {
   basevec <- rep(1, p)
-  vec <- convert_base(n-1, ninp)
+  vec <- convert_base(n - 1, ninp)
 
   vec <- c(rep(0, length(basevec) - length(vec)), vec)
   basevec + vec
@@ -279,10 +276,12 @@ nth_row <- function(n, p = 3, ninp = 5){
 #' )
 #'
 #'
-#' get_q_light(.data = data,
-#'         formula = ability ~ group | participant,
-#'         total_t = 3.5,
-#'         np = dplyr::tibble(n = 3, p = 4))
+#' get_q_light(
+#'   .data = data,
+#'   formula = ability ~ group | participant,
+#'   total_t = 3.5,
+#'   np = dplyr::tibble(n = 3, p = 4)
+#' )
 get_q_light <- function(.data, formula, total_t, np) {
   # check inputs
 
@@ -319,6 +318,7 @@ get_q_light <- function(.data, formula, total_t, np) {
 #' @export
 #'
 #' @examples
+#' convert_base(22, 4)
 convert_base <- function(num, base) {
   if (base < 2 | base > 36) {
     stop("Base must be between 2 and 36")
@@ -332,7 +332,7 @@ convert_base <- function(num, base) {
   result <- c()
   while (num > 0) {
     remainder <- num %% base
-    result <- c(digits[remainder+1], result)
+    result <- c(digits[remainder + 1], result)
     num <- floor(num / base)
   }
 
@@ -341,5 +341,3 @@ convert_base <- function(num, base) {
   }
   return(result)
 }
-
-

@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-#library(coineR)
+# library(coineR)
 library(dplyr)
 library(tidyr)
 
@@ -38,28 +38,32 @@ data$ability <- c(
 )
 
 
-friedman_test(.data = data, 
-              formula = ability ~ group | participant,
-              type = "exact")
+friedman_test(
+  .data = data,
+  formula = ability ~ group | participant,
+  type = "exact"
+)
 ```
 # Cochrans Q
 
 ```{r}
-autos <- matrix(data = c(0,0,0,0,0,1,0,0,0,1,
-                         0,1,0,0,1,0,0,1,0,1,
-                         0,1,1,0,1,1,0,1,1,1,
-                         0,1,1,0,0,1,1,1,1,1),
-                nrow = 10, ncol = 4, byrow = FALSE) %>% as_tibble() %>% 
-  mutate(family = row_number()) %>% 
+autos <- matrix(
+  data = c(
+    0, 0, 0, 0, 0, 1, 0, 0, 0, 1,
+    0, 1, 0, 0, 1, 0, 0, 1, 0, 1,
+    0, 1, 1, 0, 1, 1, 0, 1, 1, 1,
+    0, 1, 1, 0, 0, 1, 1, 1, 1, 1
+  ),
+  nrow = 10, ncol = 4, byrow = FALSE
+) %>%
+  as_tibble() %>%
+  mutate(family = row_number()) %>%
   pivot_longer(V1:V4, names_to = "group")
 
 
-  
 
 
-cochran_test(.data =  autos, formula = value ~ group | family, type = "montecarlo", n_samples = 100000)
-coin::friedman_test()
 
-
+cochran_test(.data = autos, formula = value ~ group | family, type = "montecarlo", n_samples = 100000)
 ```
 

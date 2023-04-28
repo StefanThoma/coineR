@@ -4,7 +4,12 @@
 \alias{friedman_test}
 \title{compute friedman statistic and p value}
 \usage{
-friedman_test(.data, formula, type = "exact")
+friedman_test(
+  .data,
+  formula,
+  type = c("exact", "montecarlo"),
+  n_samples = 10000
+)
 }
 \arguments{
 \item{.data}{dataframe including all relevant vectors}
