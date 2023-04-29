@@ -88,7 +88,7 @@ exact_kendall(fte, energy_t)
 # either A) on the exact distribution of s or B) on the montecarlo approximate
 # distribution (with n simulations [without replacement]) of s for the H0
 # that x and y are independent. The function will automatically compute the exact
-# test when n.sim is larger than the number of permutations under H0, otherwise the
+# test when n_samples is larger than the number of permutations under H0, otherwise the
 # montecarlo method is used.
 # The output is a list of results, containing the counts of the s vectors,
 # the corresponding probabilities, as well as the point probability and both
@@ -109,13 +109,13 @@ exact_kendall_mc <- function(x, y, n_samples = 10000){
     perm.table <- gtools::permutations(n = vec.length, r = vec.length)
 
 
-    # get all combinations or a random subset of n.sim combinations from perm.table
+    # get all combinations or a random subset of n_samples combinations from perm.table
     sample.perm.table <- perm.table[sample(nrow(perm.table),
-                                           size = min(c(nrow(perm.table), n.sim)),
+                                           size = min(c(nrow(perm.table), n_samples)),
                                            replace = FALSE), ]
     sample.perm.length <- nrow(sample.perm.table)
 
-    # get precise s values or a subset of n.sim s values under h0
+    # get precise s values or a subset of n_samples s values under h0
     s.vector <- apply(sample.perm.table, MARGIN = 1, FUN = function(ind){get.s(x, y[ind])})
 
 
@@ -142,13 +142,13 @@ exact_kendall_mc <- function(x, y, n_samples = 10000){
                      "result" = ps[paste(s.value)],
                      "p.values" = c(p.1sided, p.2sided),
                      "method" = ifelse(sample.perm.length < nrow(perm.table),
-                                       paste("montecarlo with", n.sim,
+                                       paste("montecarlo with", n_samples,
                                              "simulations", sep = " "),
                                        paste("exact")))
 
 
     if(sample.perm.length < nrow(perm.table))
-    {cat(c("\n", "Approximate Test for Kendalls S (Montecarlo with", n.sim, "simulations)", "\n", "\n"))}
+    {cat(c("\n", "Approximate Test for Kendalls S (Montecarlo with", n_samples, "simulations)", "\n", "\n"))}
     else {cat(c("\n", "Exact Test for Kendalls S", "\n", "\n"))}
 
 
@@ -161,9 +161,9 @@ exact_kendall_mc <- function(x, y, n_samples = 10000){
 
 
 # Some tests of the function
-exact_kendall_mc (fte, energy, n.sim = 700)
-exact_kendall_mc (fte, energy_t, n.sim = 10000)
+exact_kendall_mc (fte, energy, n_samples = 700)
+exact_kendall_mc (fte, energy_t, n_samples = 10000)
 exact_kendall_mc (fte, energy_0)
-exact_kendall_mc (fte, energy_0, n.sim = 720)
+exact_kendall_mc (fte, energy_0, n_samples = 720)
 
 
